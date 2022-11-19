@@ -27,6 +27,6 @@ CREATE TABLE IF NOT EXISTS companies (
   address VARCHAR(50) NOT NULL,
   social_reason VARCHAR(50) NOT NULL,
   email VARCHAR(50) NOT NULL,
-  phone_number VARCHAR(12) NOT NULL
-  n
+  phone_number VARCHAR(12) NOT NULL,
+  name VARCHAR(50) NOT NULL
 );

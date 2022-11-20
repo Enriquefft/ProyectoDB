@@ -6,22 +6,23 @@ CREATE TABLE IF NOT EXISTS customer_details(
 );
 
 CREATE TABLE IF NOT EXISTS customers (
+  PRIMARY KEY(id),
   id SERIAL
 );
 
 CREATE TABLE IF NOT EXISTS has_details (
   PRIMARY KEY (customer_id, dni),
   customer_id INTEGER       NOT NULL,
-              CONSTRAINT attribute FOREIGN KEY (attribute(s))
-                REFERENCES tableName(attribute)
+              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES customers (id),
   dni         NUMERIC(8, 0) NOT NULL,
-              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES customer_details (dni),
+              CONSTRAINT fk_customer_dni FOREIGN KEY (dni) REFERENCES customer_details (dni),
 );
 
 CREATE TABLE IF NOT EXISTS delivery_customers(
+  PRIMARY KEY (id),
   id SERIAL,
-  addres       VARCHAR (50),
-  phone_number VARCHAR (12)
+  addres       VARCHAR (50)  NOT NULL,
+  phone_number VARCHAR (12)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS local_shops(
@@ -31,27 +32,29 @@ CREATE TABLE IF NOT EXISTS local_shops(
   local_size   VARCHAR(10)    NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS provider_companies (
+CREATE TABLE IF NOT EXISTS companies_info (
   PRIMARY KEY(ruc),
   ruc            NUMERIC(11, 0) NOT NULL,
   email          VARCHAR(50)    NOT NULL,
   name           VARCHAR(50)    NOT NULL
+)
+
+CREATE TABLE IF NOT EXISTS provider_companies (
+  PRIMARY KEY(ruc, address),
+  ruc            NUMERIC(11, 0) NOT NULL,
+                 CONSTRAINT fk_ruc FOREIGN KEY (ruc) REFERENCES companies_info (ruc),
+  address        VARCHAR(50)    NOT NULL,
+  phone_number   VARCHAR(12)    NOT NULL,
   provides_count INTEGER        NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS customer_companies (
-  PRIMARY KEY(ruc),
-  ruc            NUMERIC(11, 0) NOT NULL,
-  email          VARCHAR(50)    NOT NULL,
-  name           VARCHAR(50)    NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS companies_info (
   PRIMARY KEY(ruc, address),
-  ruc            NUMERIC(11, 0)  NOT NULL,
-  address        VARCHAR(50)     NOT NULL,
-  phone_number   VARCHAR(12)     NOT NULL,
-)
+  ruc            NUMERIC(11, 0) NOT NULL,
+                 CONSTRAINT fk_ruc FOREIGN KEY (ruc) REFERENCES companies_info (ruc),
+  address        VARCHAR(50)    NOT NULL,
+  phone_number   VARCHAR(12)    NOT NULL,
+);
 
 CREATE TABLE IF NOT EXISTS products (
   PRIMARY KEY(code),
@@ -107,6 +110,8 @@ CREATE TABLE IF NOT EXISTS product_in_list (
 CREATE TABLE IF NOT EXISTS local_sells(
   PRIMARY KEY(id),
   id             SERIAL
+  client_id     INTEGER NOT NULL,
+                 CONSTRAINT local_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
@@ -128,6 +133,8 @@ CREATE TABLE IF NOT EXISTS local_sell_unit (
 CREATE TABLE IF NOT EXISTS delivery_sells (
   PRIMARY KEY(id),
   id             SERIAL
+  client_id     INTEGER NOT NULL,
+                 CONSTRAINT delivery_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES delivery_customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES locals(address),
   date_time      TIMESTAMP    NOT NULL,
@@ -180,7 +187,9 @@ CREATE TABLE IF NOT EXISTS provisions (
 CREATE TABLE IF NOT EXISTS provision_unit (
   PRIMARY KEY(provision_id, product_code),
 	provision_id   INTEGER       NOT NULL,
+                 CONSTRAINT fk_provision_unit_provision_id FOREIGN KEY (provision_id) REFERENCES provisions(id),
 	product_code   INTEGER       NOT NULL,
+                 CONSTRAINT fk_provision_unit_product_code FOREIGN KEY (product_code) REFERENCES products(code),
 	amount         NUMERIC(3, 0) NOT NULL
   subtotal       MONEY         NOT NULL,
 );

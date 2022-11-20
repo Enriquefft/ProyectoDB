@@ -190,8 +190,13 @@ CREATE TABLE IF NOT EXISTS sell_unit_delivery (
 	sell_id SERIAL NOT NULL UNIQUE
 );
 --pk
+ALTER TABLE IF EXISTS client
+ADD CONSTRAINT pk_client PRIMARY KEY (id);
 ALTER TABLE IF EXISTS worker
     ADD CONSTRAINT pk_worker PRIMARY KEY (id,person_dni);
+
+ALTER TABLE IF EXISTS client_delivery
+ADD CONSTRAINT pk_client_delivery PRIMARY KEY (id);
 	
 ALTER TABLE IF EXISTS delivery_man
     ADD CONSTRAINT pk_delivery_man PRIMARY KEY (worker_id);
@@ -262,6 +267,8 @@ ALTER TABLE provisions ADD CONSTRAINT precio_total CHECK (total_price > 0::MONEY
 ALTER TABLE products_sell ADD CONSTRAINT stock CHECK (stock >= 0);
 
 ALTER TABLE products ADD CONSTRAINT precio CHECK (price > 0::MONEY);
+ALTER TABLE IF EXISTS proyecto_1k.delivery_sell
+    ADD UNIQUE (id);
 
 --fk
 ALTER TABLE IF EXISTS worker
@@ -329,3 +336,44 @@ ALTER TABLE IF EXISTS products_sell ADD CONSTRAINT prod1ucts_sell2 FOREIGN KEY (
 ALTER TABLE IF EXISTS has_promotion ADD CONSTRAINT has_promotion1 FOREIGN KEY (product_code) REFERENCES products (code);
 
 ALTER TABLE IF EXISTS has_promotion ADD CONSTRAINT has_promotion2 FOREIGN KEY (promotion_id) REFERENCES promotions (id);
+ALTER TABLE IF EXISTS client_store
+ADD CONSTRAINT fk_client_store_client FOREIGN KEY (id)
+REFERENCES client (id);
+ALTER TABLE customer_detail ADD CONSTRAINT fk_detalle_cliente FOREIGN KEY (dni) REFERENCES person_detail(dni);
+ALTER TABLE customer_detail ADD CONSTRAINT fk_detalle_cliente FOREIGN KEY (id) REFERENCES client(id);
+
+CREATE TABLE IF NOT EXISTS employee_detail(
+    dni VARCHAR (8),
+    id INTEGER
+);
+ALTER TABLE employee_detail ADD CONSTRAINT fk_detalle_empleado FOREIGN KEY (dni) REFERENCES person_detail(dni);
+ALTER TABLE employee_detail ADD CONSTRAINT fk_detalle_empleado FOREIGN KEY (id) REFERENCES employee(id);
+
+
+ALTER TABLE client ADD CONSTRAINT pk_cliente PRIMARY KEY (id);
+
+ALTER TABLE client_store ADD CONSTRAINT fk_cliente_tienda FOREIGN KEY (id) REFERENCES client(id);
+
+ALTER TABLE purchase_local ADD CONSTRAINT pk_compra_local FOREIGN KEY (v_id) REFERENCES local_sell(id);
+ALTER TABLE purchase_local ADD CONSTRAINT pk_compra_local1 FOREIGN KEY (c_id) REFERENCES client_store(id);
+
+ALTER TABLE purchase_delivery ADD CONSTRAINT fk_compra_delivery FOREIGN KEY (v_id) REFERENCES delivery_sell(id);
+ALTER TABLE purchase_delivery ADD CONSTRAINT fk_compra_delivery1 FOREIGN KEY (c_id) REFERENCES client_delivery(id);
+
+ALTER TABLE client_delivery ADD CONSTRAINT fk_cliente_delivery FOREIGN KEY (id) REFERENCES client(id);
+ALTER TABLE IF EXISTS customer_detail
+    ADD PRIMARY KEY (dni, id);
+ALTER TABLE IF EXISTS customer_detail
+    ADD FOREIGN KEY (dni)
+    REFERENCES person_detail (dni);
+ALTER TABLE IF EXISTS customer_detail
+    ADD FOREIGN KEY (id)
+    REFERENCES client (id);
+	
+ALTER TABLE IF EXISTS employee_detail
+    ADD FOREIGN KEY (dni)
+    REFERENCES person_detail (dni);
+
+ALTER TABLE IF EXISTS employee_detail
+    ADD FOREIGN KEY (id)
+    REFERENCES worker (id);

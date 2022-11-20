@@ -30,3 +30,21 @@ CREATE TABLE IF NOT EXISTS company (
   phone_number VARCHAR(12) NOT NULL,
   name VARCHAR(50) NOT NULL
 );
+
+ALTER TABLE IF EXISTS client
+    ADD CONSTRAINT pk_client PRIMARY KEY (id);
+
+ALTER TABLE IF EXISTS shop
+    ADD CONSTRAINT pk_shop PRIMARY KEY (address);
+
+ALTER TABLE IF EXISTS product
+    ADD CONSTRAINT pk_product PRIMARY KEY (code);
+
+ALTER TABLE IF EXISTS promotion
+    ADD CONSTRAINT pk_promotion PRIMARY KEY (id);
+
+ALTER TABLE IF EXISTS products_list
+    ADD CONSTRAINT pk_products_list PRIMARY KEY (date);
+
+ALTER TABLE IF EXISTS company
+    ADD CONSTRAINT pk_company PRIMARY KEY (ruc);

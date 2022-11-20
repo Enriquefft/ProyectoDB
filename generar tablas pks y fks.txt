@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS company_local_buy (
 
 CREATE TABLE IF NOT EXISTS company_delivery_sell (
   ruc NUMERIC(11,0),
-  id SERIAL,
+  id SERIAL UNIQUE,
   invoice_number NUMERIC(11,0)
 );
 
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS client(
 
 
 CREATE TABLE IF NOT EXISTS client_store(
-    id SERIAL,
+    id SERIAL UNIQUE,
     n_visits INTEGER
 );
 
@@ -159,7 +159,7 @@ local_direction VARCHAR(50) NOT NULL ,
 	stock NUMERIC(4,0) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS delivery_sell (
-id SERIAL NOT NULL,
+id SERIAL NOT NULL UNIQUE,
 local_direction VARCHAR(50) NOT NULL ,
   date DATE NOT NULL,
   total MONEY NOT NULL,
@@ -340,25 +340,16 @@ ALTER TABLE IF EXISTS client_store
 ADD CONSTRAINT fk_client_store_client FOREIGN KEY (id)
 REFERENCES client (id);
 ALTER TABLE customer_detail ADD CONSTRAINT fk_detalle_cliente FOREIGN KEY (dni) REFERENCES person_detail(dni);
-ALTER TABLE customer_detail ADD CONSTRAINT fk_detalle_cliente FOREIGN KEY (id) REFERENCES client(id);
-
-CREATE TABLE IF NOT EXISTS employee_detail(
-    dni VARCHAR (8),
-    id INTEGER
-);
+ALTER TABLE customer_detail ADD CONSTRAINT fk_detalle_cliente1 FOREIGN KEY (id) REFERENCES client(id);
 ALTER TABLE employee_detail ADD CONSTRAINT fk_detalle_empleado FOREIGN KEY (dni) REFERENCES person_detail(dni);
-ALTER TABLE employee_detail ADD CONSTRAINT fk_detalle_empleado FOREIGN KEY (id) REFERENCES employee(id);
-
-
-ALTER TABLE client ADD CONSTRAINT pk_cliente PRIMARY KEY (id);
-
+ALTER TABLE employee_detail ADD CONSTRAINT fk_detalle_empleado1 FOREIGN KEY (id) REFERENCES worker(id);
 ALTER TABLE client_store ADD CONSTRAINT fk_cliente_tienda FOREIGN KEY (id) REFERENCES client(id);
 
 ALTER TABLE purchase_local ADD CONSTRAINT pk_compra_local FOREIGN KEY (v_id) REFERENCES local_sell(id);
 ALTER TABLE purchase_local ADD CONSTRAINT pk_compra_local1 FOREIGN KEY (c_id) REFERENCES client_store(id);
 
-ALTER TABLE purchase_delivery ADD CONSTRAINT fk_compra_delivery FOREIGN KEY (v_id) REFERENCES delivery_sell(id);
-ALTER TABLE purchase_delivery ADD CONSTRAINT fk_compra_delivery1 FOREIGN KEY (c_id) REFERENCES client_delivery(id);
+ALTER TABLE compra_delivery ADD CONSTRAINT fk_compra_delivery FOREIGN KEY (v_id) REFERENCES delivery_sell (id);
+ALTER TABLE compra_delivery ADD CONSTRAINT fk_compra_delivery1 FOREIGN KEY (c_id) REFERENCES client_delivery(id);
 
 ALTER TABLE client_delivery ADD CONSTRAINT fk_cliente_delivery FOREIGN KEY (id) REFERENCES client(id);
 ALTER TABLE IF EXISTS customer_detail

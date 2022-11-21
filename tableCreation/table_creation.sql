@@ -5,29 +5,37 @@ CREATE SCHEMA IF NOT EXISTS proyecto_10k;
 CREATE SCHEMA IF NOT EXISTS proyecto_100k;
 CREATE SCHEMA IF NOT EXISTS proyecto_1m;
 
-set search_path to proyecto_1k;
+--set search_path to proyecto_1k;
 --set search_path to proyecto_10k;
 --set search_path to proyecto_100k;
---set search_path to proyecto_1m;
+set search_path to proyecto_1m;
 
 CREATE TABLE IF NOT EXISTS customer_details(
   PRIMARY KEY(dni),
   dni         NUMERIC(8, 0)   NOT NULL,
   name        VARCHAR(50)     NOT NULL,
-  visit_count NUMERIC(4, 0)   NOT NULL
-);
+  visit_count NUMERIC(4, 0)   NOT NULL);
 
-CREATE TABLE IF NOT EXISTS customers (
+CREATE TABLE IF NOT EXISTS local_customers (
   PRIMARY KEY(id),
-  id SERIAL
+  id       SERIAL,
+  tmp_col  INTEGER -- temporal column for data generation
 );
 
 CREATE TABLE IF NOT EXISTS local_details (
   PRIMARY KEY (customer_id, dni),
   customer_id INTEGER       NOT NULL,
-              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES customers (id),
+              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES local_customers (id),
   dni         NUMERIC(8, 0) NOT NULL,
               CONSTRAINT fk_customer_dni FOREIGN KEY (dni) REFERENCES customer_details (dni)
+);
+
+
+CREATE TABLE IF NOT EXISTS delivery_customers(
+  PRIMARY KEY (id),
+  id SERIAL,
+  address      VARCHAR(50)  NOT NULL,
+  phone_number VARCHAR(12)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS delivery_details (
@@ -38,18 +46,10 @@ CREATE TABLE IF NOT EXISTS delivery_details (
               CONSTRAINT fk_customer_dni FOREIGN KEY (dni) REFERENCES customer_details (dni)
 );
 
-
-CREATE TABLE IF NOT EXISTS delivery_customers(
-  PRIMARY KEY (id),
-  id SERIAL,
-  address       VARCHAR (50)  NOT NULL,
-  phone_number VARCHAR (12)  NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS local_shops(
   PRIMARY KEY(address),
   address      VARCHAR(50)    NOT NULL,
-  phone_number VARCHAR(12)    NOT NULL,
+  phone_number VARCHAR(12)    NOT NULL UNIQUE,
   local_size   VARCHAR(10)    NOT NULL
 );
 
@@ -139,8 +139,8 @@ CREATE TABLE IF NOT EXISTS product_in_list (
 CREATE TABLE IF NOT EXISTS local_sells(
   PRIMARY KEY(id),
   id             SERIAL,
-  customer_id      INTEGER NOT NULL,
-                 CONSTRAINT local_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES customers (id),
+  customer_id    INTEGER      NOT NULL,
+                 CONSTRAINT local_sells_customer_id_fk FOREIGN KEY (customer_id) REFERENCES local_customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
@@ -164,8 +164,8 @@ CREATE TABLE IF NOT EXISTS local_sell_unit (
 CREATE TABLE IF NOT EXISTS delivery_sells (
   PRIMARY KEY(id),
   id             SERIAL,
-  customer_id     INTEGER NOT NULL,
-                 CONSTRAINT delivery_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES delivery_customers (id),
+  customer_id    INTEGER      NOT NULL,
+                 CONSTRAINT delivery_sells_customer_id_fk FOREIGN KEY (customer_id) REFERENCES delivery_customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS employees (
   dni          NUMERIC(8,0) NOT NULL,
   name         VARCHAR(50)  NOT NULL,
   address      VARCHAR(50)  NOT NULL,
-  phone_number VARCHAR(12)  NOT NULL,
+  phone_number VARCHAR(12)  NOT NULL UNIQUE,
   salary       MONEY        NOT NULL,
                CONSTRAINT fk_employee_salary CHECK (salary > 0::MONEY)
 );
@@ -241,7 +241,7 @@ CREATE TABLE IF NOT EXISTS delivery_employees(
   PRIMARY KEY(dni),
   dni           NUMERIC(8,0) NOT NULL,
                 CONSTRAINT fk_delivery_employee_dni FOREIGN KEY(dni) REFERENCES employees(dni),
-  vehicle_plate VARCHAR(6) NOT NULL,
+  vehicle_plate VARCHAR(6)   NOT NULL,
                 CONSTRAINT fk_delivery_employee_vehicle_plate FOREIGN KEY(vehicle_plate) REFERENCES vehicles(plate)
 );
 
@@ -249,31 +249,31 @@ CREATE TABLE IF NOT EXISTS local_employees(
   PRIMARY KEY(dni),
   dni          NUMERIC(8,0) NOT NULL,
                CONSTRAINT fk_local_employee_dni FOREIGN KEY(dni) REFERENCES employees(dni),
-  shop_address VARCHAR(50) NOT NULL,
+  shop_address VARCHAR(50)  NOT NULL,
                CONSTRAINT fk_local_employee_shop_address FOREIGN KEY(shop_address) REFERENCES local_shops(address),
-  position     VARCHAR(15) NOT NULL
+  position     VARCHAR(15)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS managers(
   PRIMARY KEY(dni),
   dni          NUMERIC(8,0) NOT NULL,
                CONSTRAINT fk_manager_dni FOREIGN KEY(dni) REFERENCES employees(dni),
-  position     VARCHAR(15) NOT NULL
+  position     VARCHAR(15)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS shifts(
   PRIMARY KEY(employee_dni, week_day),
   employee_dni   NUMERIC(8, 0) NOT NULL,
                  CONSTRAINT fk_shift_employee_dni FOREIGN KEY(employee_dni) REFERENCES employees(dni),
-  week_day       VARCHAR(10) NOT NULL,
-  arrival_time   TIME        NOT NULL,
-  departure_time TIME        NOT NULL,
+  week_day       VARCHAR(10)   NOT NULL,
+  arrival_time   TIME          NOT NULL,
+  departure_time TIME          NOT NULL,
                  CONSTRAINT fk_shift_departure_arrival CHECK (departure_time > arrival_time)
 );
 
 CREATE TABLE IF NOT EXISTS in_charge(
   PRIMARY KEY(shop_address, manager_dni),
-  shop_address VARCHAR(50) NOT NULL,
+  shop_address VARCHAR(50)  NOT NULL,
                CONSTRAINT fk_in_charge_shop_address FOREIGN KEY(shop_address) REFERENCES local_shops(address),
   manager_dni  NUMERIC(8,0) NOT NULL,
                CONSTRAINT fk_in_charge_manager_dni FOREIGN KEY(manager_dni) REFERENCES managers(dni)

@@ -1,39 +1,44 @@
 DO $$
 
 DECLARE
-  rowCount CONSTANT INTEGER := 1000;
+  --rowCount CONSTANT INTEGER := 1000;
   --rowCount CONSTANT INTEGER := 10000;
   --rowCount CONSTANT INTEGER := 100000;
-  --rowCount CONSTANT INTEGER := 1000000;
+  rowCount CONSTANT INTEGER := 1000000;
 
 BEGIN
 
-set search_path to proyecto_1k;
+--set search_path to proyecto_1k;
 --set search_path to proyecto_10k;
 --set search_path to proyecto_100k;
---set search_path to proyecto_1m;
+set search_path to proyecto_1m;
+
 
 -- customer_details
 INSERT INTO customer_details(
   dni, name, visit_count
 )
-SELECT * FROM(
+SELECT DISTINCT * FROM(
 SELECT
-  (random() * (99999999 - 10000000) + 10000000)::INTEGER as dni,
-  (array['juan', 'lues', 'pedro', 'jaime', left(md5(random()::text), 8)])[floor(random() * 5 + 1)] as name,
+  (random() * (99999999 - 10000000) + 10000000)::INTEGER as dni, -- 8 digits
+  (array['Juan', 'Luis', 'Marco', 'Pedro', 'Diego', 'sebastian', 'Jaime', 'Marta', 'Lourdes', 'Ambrosio', 'Alejandro', 'Jhon', 'Elizabeth', 'Camila',
+    -- double chance of random string
+    left(md5(random()::text), 8), left(md5(random()::text), 8)])[floor(random() * 5 + 1)] as name,
   (random() * (100 - 1) + 1)::INTEGER as visit_count
-FROM generate_series(1, rowCount) AS idx
-) as data;
+FROM generate_series(1, rowCount * 1.2) AS idx ORDER BY random()
+) as data LIMIT rowCount;
+
 
 -- customers
-INSERT INTO customers(
-  temp_col
+INSERT INTO local_customers(
+  tmp_col
 )
 SELECT * FROM(
 SELECT
 1
 FROM generate_series(1, rowCount) AS idx
-) as data;
+) as data LIMIT rowCount;
+
 
 -- delivery_customers
 INSERT INTO delivery_customers(
@@ -44,34 +49,31 @@ SELECT
   (array['arequipa', 'la molina', 'benavides', 'surco', 'san borja', left(md5(random()::text), 20)])[floor(random() * 6 + 1)] as name,
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT
 FROM generate_series(1, rowCount) AS idx
-) as data;
+) as data LIMIT rowCount;
 
 
--- local_shops
+---- local_shops
 INSERT INTO local_shops(
   address, phone_number, local_size
 )
-SELECT * FROM(
-SELECT
-  left(md5(idx::text), 20) as address,
-  (array['arequipa', 'la molina', 'benavides', 'surco', 'san borja', left(md5(random()::text), 20)])[floor(random() * 6 + 1)] as name,
+SELECT DISTINCT ON (phone_number)
+  (array['lima', 'chorrillos', 'miraflores', 'chacarilla', 'la molina', 'barranco', 'surco', 'san borja'])[floor(random() * 6 + 1)] || ' ' || left(md5(random()::text), 20) as address,
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number,
+  --(idx * 899 + 100000000 + (random() * 100))::INTEGER::TEXT as phone_number, -- For 1M
   (array['small', 'medium', 'big'])[floor(random() * 3 + 1)]
-FROM generate_series(1, rowCount) AS idx
-) as data;
+FROM generate_series(1, rowCount * 1.2) AS idx LIMIT rowCount;
   
 
 -- companies_info
 INSERT INTO companies_info(
   ruc, email, name
 )
-SELECT * FROM(
-SELECT
+SELECT DISTINCT ON (ruc)
   (random() * (99999999999 - 10000000000) + 10000000000)::NUMERIC(11, 0) as ruc,
   left(md5(idx::text), 25) as email,
   left(md5(idx::text), 25) as name
-FROM generate_series(1, rowCount) AS idx
-) as data;
+FROM generate_series(1, rowCount * 1.2) AS idx LIMIT rowCount;
+
 
 -- promotions
 INSERT INTO promotions(
@@ -89,28 +91,27 @@ FROM generate_series(1, rowCount) AS idx
 INSERT INTO product_lists(
   date, validity
 )
-SELECT * FROM(
 SELECT
   timestamp '2020-12-29 20:00:00' +
   random() * ( timestamp '2025-12-29 20:00:00' -
   timestamp '2020-12-29 20:00:00') as date,
   FALSE as validity
-FROM generate_series(1, rowCount) AS idx
-) as data;
+FROM generate_series(1, rowCount) AS idx;
+
 
 -- employees
 INSERT INTO employees(
   dni, name, address, phone_number, salary
 )
-SELECT * FROM(
-SELECT
+select DISTINCT ON (phone_number)
+* FROM (
+SELECT DISTINCT ON (dni)
   (random() * (99999999 - 10000000) + 10000000)::NUMERIC(8, 0) as dni,
   left(md5(idx::text), 10) as name,
   left(md5(idx::text), 25) as address,
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number,
   (random() * (999999 - 10000) + 10000)::NUMERIC::MONEY as salary
-FROM generate_series(1, rowCount) AS idx
-) as data;
+FROM generate_series(1, rowCount*1.2) AS idx) AS data LIMIT rowCount;
 
   
 -- products
@@ -128,4 +129,3 @@ FROM generate_series(1, rowCount) AS idx
 
 
 END $$
-

@@ -1,13 +1,17 @@
-
-
 DO $$
 
 DECLARE
   rowCount CONSTANT INTEGER := 1000;
+  --rowCount CONSTANT INTEGER := 10000;
+  --rowCount CONSTANT INTEGER := 100000;
+  --rowCount CONSTANT INTEGER := 1000000;
 
 BEGIN
 
 set search_path to proyecto_1k;
+--set search_path to proyecto_10k;
+--set search_path to proyecto_100k;
+--set search_path to proyecto_1m;
 
 -- customer_details
 INSERT INTO customer_details(

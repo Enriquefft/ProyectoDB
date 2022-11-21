@@ -1,34 +1,35 @@
 customer_details
 
-has_details
-
 customers
+  local_details
+
 delivery_customers
+  delivary_details
 
 local_shops
+  vehicles
 
-provider_companies
-customer_companies
 companies_info
+  provider_companies
+  customer_companies
 
 products
-
-products_in_local
+  products_in_local
 
 promotions
-has_promotion
+  has_promotion
 
 product_lists
-product_in_list
+  product_in_list
 
-local_sells
-local_sell_unit
+  local_sells
+  local_sell_unit
 
-delivery_sells
-delivery_sell_unit
+  delivery_sells
+  delivery_sell_unit
 
-company_local_sells
-company_delivery_sells
+  company_local_sells
+  company_delivery_sells
 
 provisions
 provision_unit
@@ -42,4 +43,3 @@ shifts
 
 in_charge
 
-vehicles

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS product_lists (
 CREATE TABLE IF NOT EXISTS employees (
   PRIMARY KEY(dni),
   dni          NUMERIC(8,0) NOT NULL,
-  nombre       VARCHAR(50)  NOT NULL,
+  name         VARCHAR(50)  NOT NULL,
   address      VARCHAR(50)  NOT NULL
   phone_number VARCHAR(12)  NOT NULL,
   salary       MONEY        NOT NULL
@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS products (
   code        SERIAL,
   price       MONEY       NOT NULL,
               CONSTRAINT products_positive_price CHECK (price > 0::MONEY),
-  category    VARCHAR(12) NOT NULL,
-  brand       VARCHAR(12) NOT NULL,
+  category    VARCHAR(12) NOT NULL DEFAULT 'uncategorized',
+  brand       VARCHAR(12) NOT NULL DEFAULT 'brandless',
   description VARCHAR(50) NOT NULL
 );
 

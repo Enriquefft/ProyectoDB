@@ -123,7 +123,9 @@ CREATE TABLE IF NOT EXISTS local_sells(
 CREATE TABLE IF NOT EXISTS local_sell_unit (
   PRIMARY KEY(sell_id, product_code),
 	sell_id      INTEGER       NOT NULL,
+               CONSTRAINT fk_local_sell_unit_sell_id FOREIGN KEY (sell_id) REFERENCES local_sells (id),
 	product_code INTEGER       NOT NULL,
+               CONSTRAINT fk_local_sell_unit_product_code FOREIGN KEY (product_code) REFERENCES products (code),
 	amount       NUMERIC(3, 0) NOT NULL
                CONSTRAINT fk_local_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0))
   subtotal     MONEY         NOT NULL,
@@ -147,7 +149,9 @@ CREATE TABLE IF NOT EXISTS delivery_sells (
 CREATE TABLE IF NOT EXISTS delivery_sell_unit(
   PRIMARY KEY(sell_id, product_code),
 	sell_id      INTEGER       NOT NULL,
+               CONSTRAINT fk_delivery_sell_unit_sell_id FOREIGN KEY (sell_id) REFERENCES delivery_sells (id),
 	product_code INTEGER       NOT NULL,
+               CONSTRAINT fk_delivery_sell_unit_product_code FOREIGN KEY (product_code) REFERENCES products (code),
 	amount       NUMERIC(3, 0) NOT NULL
                CONSTRAINT fk_delivery_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0))
   subtotal     MONEY         NOT NULL,

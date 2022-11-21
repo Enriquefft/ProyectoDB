@@ -1,6 +1,12 @@
-BEGIN TRANSACTION;
 
-rowCount CONSTANT NUMBER := 1000;
+
+DO $$
+
+DECLARE
+  rowCount CONSTANT INTEGER := 1000;
+
+BEGIN
+
 set search_path to proyecto_1k;
 
 -- customer_details
@@ -10,7 +16,7 @@ INSERT INTO customer_details(
 SELECT * FROM(
 SELECT
   (random() * (99999999 - 10000000) + 10000000)::INTEGER as dni,
-  (array['juan', 'lues', 'pedro', 'jaime', left(md5(random()::text), 8)])[floor(random() * 5 + 1)] as name
+  (array['juan', 'lues', 'pedro', 'jaime', left(md5(random()::text), 8)])[floor(random() * 5 + 1)] as name,
   (random() * (100 - 1) + 1)::INTEGER as visit_count
 FROM generate_series(1, rowCount) AS idx
 ) as data;
@@ -32,7 +38,6 @@ INSERT INTO delivery_customers(
 SELECT * FROM(
 SELECT
   left(md5(idx::text), 20) as address,
-  left(md5(idx::text), 10) as phone_number
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT
 FROM generate_series(1, rowCount) AS idx
 ) as data;
@@ -45,8 +50,8 @@ INSERT INTO local_shops(
 SELECT * FROM(
 SELECT
   left(md5(idx::text), 20) as address,
-  (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number
-  (array['small', 'medium', 'big'])[floor(random() * 3 + 1)],
+  (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number,
+  (array['small', 'medium', 'big'])[floor(random() * 3 + 1)]
 FROM generate_series(1, rowCount) AS idx
 ) as data;
   
@@ -58,7 +63,7 @@ INSERT INTO companies_info(
 SELECT * FROM(
 SELECT
   (random() * (99999999999 - 10000000000) + 10000000000)::NUMERIC(11, 0) as ruc,
-  left(md5(idx::text), 25) as email
+  left(md5(idx::text), 25) as email,
   left(md5(idx::text), 25) as name
 FROM generate_series(1, rowCount) AS idx
 ) as data;
@@ -70,7 +75,7 @@ INSERT INTO promotions(
 SELECT * FROM(
 SELECT
   random() > 0.5 as validity,
-  (random() * (999 - 10) + 10)::MONEY as value,
+  (random() * (999 - 10) + 10)::NUMERIC::MONEY as value
 FROM generate_series(1, rowCount) AS idx
 ) as data;
 
@@ -109,11 +114,13 @@ INSERT INTO products(
 )
 SELECT * FROM(
 SELECT
-  (random() * (999 - 1) + 1)::NUMERIC::MONEY as price
+  (random() * (999 - 1) + 1)::NUMERIC::MONEY as price,
   (array['uncategorized', 'food', 'drink'])[floor(random() * 3 + 1)] as category,
   (array['brandless', 'brand1', 'brand2'])[floor(random() * 3 + 1)] as brand,
   left(md5(idx::text), 10) as description
 FROM generate_series(1, rowCount) AS idx
 ) as data;
 
-COMMIT;
+
+END $$
+

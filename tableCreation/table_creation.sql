@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS has_details (
 CREATE TABLE IF NOT EXISTS delivery_customers(
   PRIMARY KEY (id),
   id SERIAL,
-  addres       VARCHAR (50)  NOT NULL,
+  address       VARCHAR (50)  NOT NULL,
   phone_number VARCHAR (12)  NOT NULL
 );
 
@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS provision_unit (
 CREATE TABLE IF NOT EXISTS employees (
   PRIMARY KEY(dni),
   dni          NUMERIC(8,0) NOT NULL,
-  nombre       VARCHAR(50)  NOT NULL,
+  name         VARCHAR(50)  NOT NULL,
   address      VARCHAR(50)  NOT NULL,
   phone_number VARCHAR(12)  NOT NULL,
   salary       MONEY        NOT NULL,

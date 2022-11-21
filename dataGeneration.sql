@@ -41,7 +41,7 @@ INSERT INTO delivery_customers(
 )
 SELECT * FROM(
 SELECT
-  left(md5(idx::text), 20) as address,
+  (array['arequipa', 'la molina', 'benavides', 'surco', 'san borja', left(md5(random()::text), 20)])[floor(random() * 6 + 1)] as name,
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT
 FROM generate_series(1, rowCount) AS idx
 ) as data;
@@ -54,6 +54,7 @@ INSERT INTO local_shops(
 SELECT * FROM(
 SELECT
   left(md5(idx::text), 20) as address,
+  (array['arequipa', 'la molina', 'benavides', 'surco', 'san borja', left(md5(random()::text), 20)])[floor(random() * 6 + 1)] as name,
   (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number,
   (array['small', 'medium', 'big'])[floor(random() * 3 + 1)]
 FROM generate_series(1, rowCount) AS idx

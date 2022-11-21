@@ -5,10 +5,10 @@ CREATE SCHEMA IF NOT EXISTS proyecto_10k;
 CREATE SCHEMA IF NOT EXISTS proyecto_100k;
 CREATE SCHEMA IF NOT EXISTS proyecto_1m;
 
---set search_path to proyecto_1k;
+set search_path to proyecto_1k;
 --set search_path to proyecto_10k;
 --set search_path to proyecto_100k;
-set search_path to proyecto_1m;
+--set search_path to proyecto_1m;
 
 CREATE TABLE IF NOT EXISTS customer_details(
   PRIMARY KEY(dni),
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS local_details (
 CREATE TABLE IF NOT EXISTS delivery_details (
   PRIMARY KEY (customer_id, dni),
   customer_id INTEGER       NOT NULL,
-              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES customers (id),
+              CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES delivery_customers (id),
   dni         NUMERIC(8, 0) NOT NULL,
               CONSTRAINT fk_customer_dni FOREIGN KEY (dni) REFERENCES customer_details (dni)
 );
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS product_in_list (
 CREATE TABLE IF NOT EXISTS local_sells(
   PRIMARY KEY(id),
   id             SERIAL,
-  client_id      INTEGER NOT NULL,
+  customer_id      INTEGER NOT NULL,
                  CONSTRAINT local_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS local_sell_unit (
 CREATE TABLE IF NOT EXISTS delivery_sells (
   PRIMARY KEY(id),
   id             SERIAL,
-  client_id     INTEGER NOT NULL,
+  customer_id     INTEGER NOT NULL,
                  CONSTRAINT delivery_sells_client_id_fk FOREIGN KEY (client_id) REFERENCES delivery_customers (id),
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),

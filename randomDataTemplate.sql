@@ -11,6 +11,11 @@ left(md5(random()::text), SIZE)
 random() * (MAX - MIN) + MIN
 (random() * (MAX - MIN) + MIN)::INTEGER
 
+-- Random string from array and random
+(array['juan', 'lues', 'pedro', 'jaime', left(md5(random()::text), 8)])[floor(random() * 5 + 1)] as name,
+
+-- Random phone number as varchar
+(random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT,
 
 -- Insert random data
 INSERT INTO tablename(

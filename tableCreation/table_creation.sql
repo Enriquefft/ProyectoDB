@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS products (
   code        SERIAL,
   price       MONEY       NOT NULL,
               CONSTRAINT products_positive_price CHECK (price > 0::MONEY),
-  category    VARCHAR(12) NOT NULL,
+  category    VARCHAR(15) NOT NULL,
   brand       VARCHAR(12) NOT NULL,
   description VARCHAR(50) NOT NULL
 );

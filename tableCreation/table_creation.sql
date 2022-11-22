@@ -144,8 +144,8 @@ CREATE TABLE IF NOT EXISTS local_sells(
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
-  products_price MONEY        NOT NULL,
-                 CONSTRAINT fk_local_sell_products_price CHECK (products_price > 0::MONEY),
+  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
+                 CONSTRAINT local_sells_products_price CHECK (products_price > 0::MONEY),
   payment_method VARCHAR(20)  NOT NULL
 );
 
@@ -156,9 +156,9 @@ CREATE TABLE IF NOT EXISTS local_sell_unit (
 	product_code INTEGER       NOT NULL,
                CONSTRAINT fk_local_sell_unit_product_code FOREIGN KEY (product_code) REFERENCES products (code),
 	amount       NUMERIC(3, 0) NOT NULL
-               CONSTRAINT fk_local_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0)),
+               CONSTRAINT local_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0)),
   subtotal     MONEY         NOT NULL,
-               CONSTRAINT fk_local_sell_unit_subtotal CHECK (subtotal > 0::MONEY)
+               CONSTRAINT local_sell_unit_subtotal CHECK (subtotal > 0::MONEY)
 );
 
 CREATE TABLE IF NOT EXISTS delivery_sells (
@@ -169,8 +169,8 @@ CREATE TABLE IF NOT EXISTS delivery_sells (
   address        VARCHAR(50)  NOT NULL,
                  CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
-  products_price MONEY        NOT NULL,
-                 CONSTRAINT fk_delivery_sell_products_price CHECK (products_price > 0::MONEY),
+  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
+                 CONSTRAINT delivery_sell_products_price CHECK (products_price > 0::MONEY),
   delivery_price MONEY        NOT NULL,
   payment_method VARCHAR(20)  NOT NULL
 );
@@ -182,9 +182,9 @@ CREATE TABLE IF NOT EXISTS delivery_sell_unit(
 	product_code INTEGER       NOT NULL,
                CONSTRAINT fk_delivery_sell_unit_product_code FOREIGN KEY (product_code) REFERENCES products (code),
 	amount       NUMERIC(3, 0) NOT NULL,
-               CONSTRAINT fk_delivery_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0)),
+               CONSTRAINT delivery_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0)),
   subtotal     MONEY         NOT NULL,
-               CONSTRAINT fk_delivery_sell_unit_subtotal CHECK (subtotal > 0::MONEY)
+               CONSTRAINT delivery_sell_unit_subtotal CHECK (subtotal > 0::MONEY)
 );
 
 CREATE TABLE IF NOT EXISTS company_local_sells (
@@ -214,7 +214,7 @@ CREATE TABLE IF NOT EXISTS provisions (
               CONSTRAINT fk_provisions_ruc FOREIGN KEY (ruc) REFERENCES companies_info(ruc),
   date_time   TIMESTAMP      NOT NULL,
   total_price MONEY          NOT NULL
-              CONSTRAINT fk_provision_total_price CHECK (total_price > 0::MONEY)
+              CONSTRAINT provision_total_price CHECK (total_price > 0::MONEY)
 );
 
 CREATE TABLE IF NOT EXISTS provision_unit (
@@ -234,7 +234,7 @@ CREATE TABLE IF NOT EXISTS employees (
   address      VARCHAR(50)  NOT NULL,
   phone_number VARCHAR(12)  NOT NULL UNIQUE,
   salary       MONEY        NOT NULL,
-               CONSTRAINT fk_employee_salary CHECK (salary > 0::MONEY)
+               CONSTRAINT employee_salary CHECK (salary > 0::MONEY)
 );
 
 CREATE TABLE IF NOT EXISTS delivery_employees(
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS shifts(
   week_day       VARCHAR(10)   NOT NULL,
   arrival_time   TIME          NOT NULL,
   departure_time TIME          NOT NULL,
-                 CONSTRAINT fk_shift_departure_arrival CHECK (departure_time > arrival_time)
+                 CONSTRAINT shift_departure_arrival CHECK (departure_time > arrival_time)
 );
 
 CREATE TABLE IF NOT EXISTS in_charge(

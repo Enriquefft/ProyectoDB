@@ -1,0 +1,45 @@
+price,category,brand,description
+55,food,brandless,doble
+30,food,brandless,simple
+13.5,drink,brandless,najar chico
+30,drink,brandless,najar grande
+9,sweet,brandless,mermelada papaya
+9.5,sweet,brandless,mermelada membrillo
+9.5,sweet,brandless,mermelada fresa
+9.5,sweet,brandless,dulce tradicion 24
+24,sweet,vildoso,vildoso
+13,sweet,brandless,cocadas
+8.5,food,brandless,salchicha
+22.5,food,brandless,chorizo
+18.5,drink,socosani,escosesa 400
+4.5,drink,socosani,escosesa light
+5,drink,socosani,escosesa 1/2l
+9,drink,socosani,escosesa 1/2n
+8.5,drink,ism,energina 2l
+3.5,drink,ism,energina 500
+12,drink,amauta,cervesa
+9,food,majes,aceituna con pepa
+10,food,majes,aceituna deshuesada
+11,food,majes,aceituna con rocoto
+13,food,majes,aceituna castaña
+10.7,food,majes,aceituna seca
+35,food,majes,aceite de oliva grande
+22,food,majes,aceite de oliva mediano
+14,food,majes,aceite de oliva pequeño
+20,sweet,brandless,bizcochos
+17,drink,brandless,ceramica de adobo
+15,drink,brandless,ceramica fantasia
+5,sweet,aruba,queso helado
+11.3,food,quillabamba,mantequilla
+14,food,roma,salteña
+14,food,brandless,tamales
+6,food,brandless,machacado
+10.8,food,brandless,mezcla de verduras
+22,food,brandless,queso fresco vitor
+32,food,brandless,queso andino vitor
+31.5,food,dimas,queso paria dimas
+12.5,food,iray,queso tilsi iray
+17.5,food,iray,queso paria iray
+17.5,food,iray,queso edam iray
+17.5,food,brandless,queso finas hierbas
+

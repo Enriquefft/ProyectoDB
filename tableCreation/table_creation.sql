@@ -145,7 +145,6 @@ CREATE TABLE IF NOT EXISTS local_sells(
                  CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
   products_price MONEY        NOT NULL DEFAULT 0::MONEY,
-                 CONSTRAINT local_sells_products_price CHECK (products_price > 0::MONEY),
   payment_method VARCHAR(20)  NOT NULL
 );
 
@@ -170,7 +169,6 @@ CREATE TABLE IF NOT EXISTS delivery_sells (
                  CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),
   date_time      TIMESTAMP    NOT NULL,
   products_price MONEY        NOT NULL DEFAULT 0::MONEY,
-                 CONSTRAINT delivery_sell_products_price CHECK (products_price > 0::MONEY),
   delivery_price MONEY        NOT NULL,
   payment_method VARCHAR(20)  NOT NULL
 );

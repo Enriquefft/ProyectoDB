@@ -10,6 +10,34 @@ CREATE SCHEMA IF NOT EXISTS proyecto_1m;
 --set search_path to proyecto_100k;
 set search_path to proyecto_1m;
 
+CREATE TABLE IF NOT EXISTS local_shops(
+  PRIMARY KEY(address),
+  address      VARCHAR(50)    NOT NULL,
+  phone_number VARCHAR(12)    NOT NULL UNIQUE,
+  local_size   VARCHAR(10)    NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS local_sells(
+  PRIMARY KEY(id),
+  id             SERIAL,
+  address        VARCHAR(50)  NOT NULL,
+                 CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
+  date_time      TIMESTAMP    NOT NULL,
+  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
+  payment_method VARCHAR(20)  NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS delivery_sells (
+  PRIMARY KEY(id),
+  id             SERIAL,
+  address        VARCHAR(50)  NOT NULL,
+                 CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),
+  date_time      TIMESTAMP    NOT NULL,
+  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
+  delivery_price MONEY        NOT NULL,
+  payment_method VARCHAR(20)  NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS customer_details(
   PRIMARY KEY(dni),
   dni         NUMERIC(8, 0)   NOT NULL,
@@ -19,7 +47,17 @@ CREATE TABLE IF NOT EXISTS customer_details(
 CREATE TABLE IF NOT EXISTS local_customers (
   PRIMARY KEY(id),
   id       SERIAL,
-  tmp_col  INTEGER -- temporal column for data generation
+  sell_id  INTEGER NOT NULL,
+           CONSTRAINT fk_local_customer_sell_id FOREIGN KEY(sell_id) REFERENCES local_sells(id)
+);
+
+CREATE TABLE IF NOT EXISTS delivery_customers(
+  PRIMARY KEY (id),
+  id SERIAL,
+  address      VARCHAR(50)  NOT NULL,
+  phone_number VARCHAR(12)  NOT NULL,
+  sell_id      INTEGER      NOT NULL,
+               CONSTRAINT fk_delivery_customer_sell_id FOREIGN KEY(sell_id) REFERENCES delivery_sells(id)
 );
 
 CREATE TABLE IF NOT EXISTS local_details (
@@ -31,26 +69,12 @@ CREATE TABLE IF NOT EXISTS local_details (
 );
 
 
-CREATE TABLE IF NOT EXISTS delivery_customers(
-  PRIMARY KEY (id),
-  id SERIAL,
-  address      VARCHAR(50)  NOT NULL,
-  phone_number VARCHAR(12)  NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS delivery_details (
   PRIMARY KEY (customer_id, dni),
   customer_id INTEGER       NOT NULL,
               CONSTRAINT fk_customer_id FOREIGN KEY (customer_id) REFERENCES delivery_customers (id),
   dni         NUMERIC(8, 0) NOT NULL,
               CONSTRAINT fk_customer_dni FOREIGN KEY (dni) REFERENCES customer_details (dni)
-);
-
-CREATE TABLE IF NOT EXISTS local_shops(
-  PRIMARY KEY(address),
-  address      VARCHAR(50)    NOT NULL,
-  phone_number VARCHAR(12)    NOT NULL UNIQUE,
-  local_size   VARCHAR(10)    NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS vehicles(
@@ -136,18 +160,6 @@ CREATE TABLE IF NOT EXISTS product_in_list (
                CONSTRAINT product_in_list_list_date_fkey FOREIGN KEY (list_date) REFERENCES product_lists(date)
 	);
 
-CREATE TABLE IF NOT EXISTS local_sells(
-  PRIMARY KEY(id),
-  id             SERIAL,
-  customer_id    INTEGER      NOT NULL,
-                 CONSTRAINT local_sells_customer_id_fk FOREIGN KEY (customer_id) REFERENCES local_customers (id),
-  address        VARCHAR(50)  NOT NULL,
-                 CONSTRAINT local_sells_address_fk FOREIGN KEY (address) REFERENCES local_shops(address),
-  date_time      TIMESTAMP    NOT NULL,
-  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
-  payment_method VARCHAR(20)  NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS local_sell_unit (
   PRIMARY KEY(sell_id, product_code),
 	sell_id      INTEGER       NOT NULL,
@@ -158,19 +170,6 @@ CREATE TABLE IF NOT EXISTS local_sell_unit (
                CONSTRAINT local_sell_unit_amount CHECK (amount > 0::NUMERIC(3, 0)),
   subtotal     MONEY         NOT NULL,
                CONSTRAINT local_sell_unit_subtotal CHECK (subtotal > 0::MONEY)
-);
-
-CREATE TABLE IF NOT EXISTS delivery_sells (
-  PRIMARY KEY(id),
-  id             SERIAL,
-  customer_id    INTEGER      NOT NULL,
-                 CONSTRAINT delivery_sells_customer_id_fk FOREIGN KEY (customer_id) REFERENCES delivery_customers (id),
-  address        VARCHAR(50)  NOT NULL,
-                 CONSTRAINT fk_delivery_sell_address FOREIGN KEY(address) REFERENCES local_shops(address),
-  date_time      TIMESTAMP    NOT NULL,
-  products_price MONEY        NOT NULL DEFAULT 0::MONEY,
-  delivery_price MONEY        NOT NULL,
-  payment_method VARCHAR(20)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS delivery_sell_unit(

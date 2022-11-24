@@ -1,26 +1,31 @@
-SELECT dni, name, sum_local + sum_delivery AS suma
-FROM (
-    SELECT customer_details.dni, name, SUM(local_sells.products_price) AS sum_local 
-    FROM local_sells JOIN local_customers 
-    ON local_sells.customer_id=local_customers.id 
-    JOIN local_details 
-    ON local_details.customer_id=local_customers.id 
-    JOIN customer_details 
-    ON customer_details.dni=local_details.dni
-    WHERE EXTRACT(YEAR FROM delivery_sells.date_time)=EXTRACT(YEAR FROM CURRENT_DATE)
-    ) AS loc 
-    JOIN 
-    (
-    SELECT dni, name, SUM(delivery_sells.products_price) AS sum_delivery 
-    FROM delivery_sells JOIN delivery_customers 
-    ON delivery_sells.customer_id=delivery_customers.id
-    JOIN delivery_details 
-    ON delivery_details.customer_id=delivery_customers.id
-    JOIN customer_details 
-    ON customer_details.dni=delivery_details.dni
-    WHERE EXTRACT(YEAR FROM delivery_sells.date_time)=EXTRACT(YEAR FROM CURRENT_DATE)
-    ) AS del 
-    ON loc.dni = del.dni
-    GROUP BY loc.dni
-    ORDER BY sum_local DESC LIMIT 1;
+
+set search_path to proyecto_1m, public;
+
+select max(count), ruc
+from (
+select delivery_ruc_count.ruc, sum_del + sum_local as count
+FROM
+
+(SELECT ruc, count(ruc) AS sum_del FROM 
+
+  (SELECT id AS delivery_id
+FROM delivery_sells WHERE
+  EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)) AS delivery_sells
+JOIN
+  company_delivery_sells
+ON
+company_delivery_sells.sell_id = delivery_sells.delivery_id GROUP BY ruc) AS delivery_ruc_count
+
+FULL OUTER JOIN
+
+(SELECT ruc, count(ruc) AS sum_local FROM 
+  (SELECT id AS local_id
+FROM local_sells WHERE
+  EXTRACT(YEAR FROM date_time) = EXTRACT(YEAR FROM CURRENT_DATE)) AS local_sells
+JOIN
+  company_local_sells
+ON
+company_local_sells.sell_id = local_sells.local_id GROUP BY ruc) AS local_ruc_count
+
+ON delivery_ruc_count.ruc = local_ruc_count.ruc) data group by ruc;
 

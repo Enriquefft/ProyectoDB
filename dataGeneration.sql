@@ -44,24 +44,6 @@ FROM generate_series(1, customerDetailsCount * 1.5) AS idx ORDER BY random()
 ) as data LIMIT customerDetailsCount;
 
 
--- customers
-INSERT INTO local_customers(
-  tmp_col
-)
-SELECT
-1
-FROM generate_series(1, localSellsCount - companyLocalSellCount) AS idx;
-
-
--- delivery_customers
-INSERT INTO delivery_customers(
-  address, phone_number
-)
-SELECT
-  (array['lima', 'chorrillos', 'miraflores', 'chacarilla', 'la molina', 'barranco', 'surco', 'san borja'])[floor(random() * 8 + 1)] || ' ' || left(md5(random()::text), 10) as address,
-  (random() * (999999999 - 100000000) + 100000000)::INTEGER::TEXT as phone_number
-FROM generate_series(1, deliverySellsCount - companydeliverySellCount) AS idx;
-
 
 ---- local_shops
 INSERT INTO local_shops(
